@@ -1,83 +1,101 @@
-# ARCHITECTURE AND ORGANIZATION OF DIGITAL SYSTEMS
+# Architecture and Organization of Digital Systems
 
-## Overview
-
-This repository is dedicated to the study and implementation of concepts related to **Architecture and Organization of Digital Systems**. It serves as a resource for understanding, designing, and analyzing digital systems at both architectural and organizational levels. The repository includes theoretical materials, practical projects, and simulations to facilitate a comprehensive understanding of the subject.
+This repository serves as a comprehensive study of the design, implementation, and analysis of digital systems, exploring both theoretical and practical aspects. The focus is on understanding modern digital architectures, with a primary emphasis on MIPS processor designs and advanced topics such as System-on-Chip (SoC) and Network-on-Chip (NoC).
 
 ---
 
-## Key Topics Covered
+## Repository Structure
 
-### 1. **Digital System Architecture**
-- **Instruction Set Architecture (ISA)**: Understanding how instructions are structured and executed in a processor.
-- **Microarchitecture**: Analysis of processor components such as ALUs, registers, and control units.
-- **Pipelining**: Techniques to enhance processor performance by executing multiple instructions simultaneously.
-- **Memory Hierarchy**: Cache, RAM, and storage organization.
-- **I/O Systems**: Interfaces for communication between the processor and external devices.
+### 1. **MIPS_Pipeline**
+This folder contains the implementation of a pipelined MIPS processor, showcasing the following:
 
-### 2. **Digital System Organization**
-- **Combinational and Sequential Circuits**: Design and implementation of logic circuits, flip-flops, and state machines.
-- **Control Unit Design**: Implementation of finite state machines to manage processor operations.
-- **Datapath Design**: Design of data flow through the processor components.
-- **Timing and Clocking**: Understanding clock cycles, clock skew, and timing constraints.
+- **Modules**:
+  - Core components: `adder.sv`, `mux2.sv`, `mux3.sv`, `datapath_pipeline.sv`.
+  - Pipeline stages: `if_stage.sv`, `id_stage.sv`, `ex_stage.sv`, `mem_stage.sv`, `wb_stage.sv`.
+  - Performance enhancements: `branch_predictor.sv`, `hazard_detection_unit.sv`, `forwarding_unit.sv`.
 
-### 3. **Performance Analysis**
-- **Metrics**: Evaluating throughput, latency, and utilization.
-- **Critical Path Analysis**: Identifying and optimizing bottlenecks in system design.
-- **Power and Energy Considerations**: Analysis of power consumption and techniques for energy efficiency.
+- **Utilities**:
+  - `run_sim.sh`: Script for automating simulations.
+  - `types_pkg.sv`: Type definitions for the project.
+  - `memfile.dat`: Memory initialization file.
 
----
+- **Testbenches**:
+  Comprehensive testing for each module and the entire pipeline, located in the `testbenchs` directory, such as:
+  - `adder_tb.sv`
+  - `datapath_tb.sv`
+  - `top_pipeline_tb.sv`
 
-## Features of This Repository
-
-### **Theoretical Resources**
-- Detailed notes and references on key concepts.
-- Tutorials and diagrams explaining architectural and organizational principles.
-
-### **Practical Projects**
-- Design and implementation of processors with varying levels of complexity.
-- Examples include:
-  - Single-cycle processors.
-  - Multi-cycle processors.
-  - Pipelined processors.
-
-### **Simulation and Verification**
-- Use of tools like **Verilog/SystemVerilog** for hardware description and simulation.
-- Testbenches and validation scripts for verifying functionality and performance.
+Explore this folder: [MIPS_Pipeline](https://github.com/jaquedebrito/Architecture-and-Organization-of-Digital-Systems/tree/main/MIPS_Pipeline)
 
 ---
 
-## Getting Started
+### 2. **MIPS_monociclo**
+This folder contains the implementation of a single-cycle MIPS processor, featuring:
 
-### **Prerequisites**
-- Basic knowledge of digital logic and computer architecture.
-- Familiarity with hardware description languages such as **Verilog/SystemVerilog**.
-- Access to simulation tools (e.g., **ModelSim**, **Vivado**, **Quartus**).
+- **Modules**:
+  - `controller.sv`, `datapath.sv`: Core logic for the control unit and data path.
+  - `instruction_memory.sv`, `data_memory.sv`: Memory modules.
+  - `top.sv`: Top-level module integrating all components.
 
-### **How to Use**
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/your-username/digital-systems.git
-   cd digital-systems
-   ```
-2. Explore the `docs/` folder for theoretical resources.
-3. Navigate to the `projects/` folder to view practical implementations.
-4. Use the `simulations/` folder to run test cases and validate designs.
+- **Explanations**:
+  - Detailed explanations for modules and results in the `explicacoes` folder, such as `adder_explicacao_resultado`.
+
+- **Utilities**:
+  - `run_sim.sh`: Script for running simulations.
+  - `memfile.dat`: Memory initialization file.
+
+- **Testbenches**:
+  A variety of testbenches for modules like `mux2_tb.sv`, `controller_tb.sv`, and `datapath_tb.sv`.
+
+Explore this folder: [MIPS_monociclo](https://github.com/jaquedebrito/Architecture-and-Organization-of-Digital-Systems/tree/main/MIPS_monociclo)
+
+---
+
+## Theoretical Coverage
+
+The discipline also covered advanced theoretical topics, bridging the gap between traditional architectures and modern digital system design:
+
+1. **IP Cores**:
+   - Reusable design blocks that enable modularity and scalability in digital system design.
+   - Types: Soft Cores, Firm Cores, and Hard Cores.
+
+2. **System-on-Chip (SoC)**:
+   - Integration of processors, memory, interfaces, and peripherals on a single chip.
+   - Explored the evolution from ASICs to SoCs.
+
+3. **Communication Architectures**:
+   - Traditional bus systems (e.g., PCI, AMBA) and their limitations.
+   - Transition to Network-on-Chip (NoC), enabling parallel communication and scalability.
+
+4. **3D Technologies**:
+   - 3D-IC (Integrated Circuits): Layered designs for improved density and performance.
+   - 3D-NoC (Network-on-Chip): Combining NoC with 3D-IC for optimal communication and integration.
+
+---
+
+## Learning Outcomes
+
+This repository reflects the following key outcomes for students:
+1. **Practical Skills**:
+   - Implementation and testing of single-cycle and pipelined MIPS processors.
+   - Mastery of modular design and verification techniques.
+
+2. **Advanced Knowledge**:
+   - Understanding of IP Cores, SoCs, NoCs, and 3D technologies.
+   - Insights into the evolution of digital architectures.
+
+3. **Tool Proficiency**:
+   - Use of hardware description languages (SystemVerilog) and simulation tools.
+   - Automation of testing and simulation processes.
+
+4. **Documentation and Communication**:
+   - Clear documentation of designs, test results, and theoretical concepts.
 
 ---
 
 ## Contributions
 
-Contributions are welcome! If you'd like to add new projects, improve documentation, or share your insights, feel free to submit a pull request.
-
----
-
-## License
-
-This repository is licensed under the MIT License. See the `LICENSE` file for details.
-
----
-
-## Acknowledgments
-
-This repository was developed as part of the **Architecture and Organization of Digital Systems** course to provide hands-on experience and deepen understanding of digital system design principles.
+Contributions are welcome! You can:
+- Improve existing modules or explanations.
+- Add new testbenches or features.
+- Enhance documentation.
