@@ -1,0 +1,2 @@
+#e1(21Mar2025:16:35:21): source ./xcelium.d/env.d/env.history.21Mar2025_16_35_21
+s1(21Mar2025:16:35:21):  xrun adder.sv adder_tb.sv 
