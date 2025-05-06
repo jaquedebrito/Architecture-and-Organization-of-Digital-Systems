@@ -1,0 +1,319 @@
+Observação: No item 5, tem a explicação de como executar o run_sim.sh
+
+Projeto de Implementação do Processador MIPS Monociclo
+
+Data do Projeto: 2025-03-11
+Autor: Jaqueline Ferreira de Brito
+Versão: 1.0
+1. Visão Geral do Projeto
+
+Este projeto implementa um processador MIPS monociclo completo em SystemVerilog, seguindo a arquitetura Harvard com memórias separadas para instruções e dados. O processador suporta um conjunto básico de instruções MIPS, incluindo operações aritméticas e lógicas, carregamento e armazenamento em memória, e instruções de desvio e salto.
+
+2. Estrutura do Projeto
+2.1. Organização dos Arquivos
+
+./
+├── adder.sv                  # Módulo somador
+├── controller.sv             # Controlador principal
+├── data_memory.sv            # Memória de dados
+├── datapath.sv               # Caminho de dados
+├── flopr.sv                  # Flip-flop com reset
+├── instruction_memory.sv     # Memória de instruções
+├── main_control.sv           # Unidade de controle principal
+├── memfile.dat               # Arquivo de programa MIPS
+├── mux2.sv                   # Multiplexador 2:1
+├── regfile.sv                # Banco de registradores
+├── run_sim.sh                # Script de execução de simulação
+├── signext.sv                # Extensão de sinal
+├── sl2.sv                    # Deslocador de 2 bits à esquerda
+├── testbenchs/               # Pasta com todos os testbenches
+│   ├── adder_tb.sv
+│   ├── controller_tb.sv
+│   ├── data_memory_tb.sv
+│   └── ... (outros testbenches)
+├── top.sv                    # Módulo top-level do processador
+├── top_tb.sv                 # Testbench do processador completo
+├── ula.sv                    # Unidade Lógico-Aritmética
+└── ula_control.sv            # Controlador da ULA
+
+2.2. Hierarquia de Módulos
+
+O projeto segue uma estrutura hierárquica com os seguintes níveis:
+
+    Nível Superior (Top-Level): top.sv - Integra todos os componentes
+    Nível Intermediário:
+        datapath.sv - Caminho de dados da CPU
+        controller.sv - Unidade de controle da CPU
+        instruction_memory.sv - Memória de instruções
+        data_memory.sv - Memória de dados
+    Componentes Básicos:
+        ula.sv & ula_control.sv - Unidade aritmético-lógica e seu controle
+        regfile.sv - Banco de registradores
+        adder.sv, mux2.sv, flopr.sv, etc - Componentes elementares
+
+3. Componentes do Processador
+3.1. Módulo Top (top.sv)
+
+Integra todos os componentes do processador MIPS:
+
+    CPU (datapath + controller)
+    Memória de instruções
+    Memória de dados
+
+3.2. Datapath (datapath.sv)
+
+Implementa o caminho de dados do processador, incluindo:
+
+    Banco de registradores
+    ULA
+    Circuitos para cálculo de endereços
+    Multiplexadores para seleção de dados
+
+3.3. Controller (controller.sv)
+
+Gerencia os sinais de controle do processador, composto por:
+
+    Unidade de controle principal (main_control.sv)
+    Controlador da ULA (ula_control.sv)
+
+3.4. ULA e ULA Control (ula.sv, ula_control.sv)
+
+    ULA: Executa operações aritméticas e lógicas (ADD, SUB, AND, OR, SLT)
+    ULA Control: Decodifica sinais de operação para a ULA
+
+3.5. Memórias (instruction_memory.sv, data_memory.sv)
+
+    Memória de Instruções: Armazena o programa em execução
+    Memória de Dados: Armazena dados manipulados pelo programa
+
+3.6. Componentes de Suporte
+
+    Banco de Registradores: Armazena 32 registradores de 32 bits
+    Somadores: Realizam incremento do PC e cálculos de endereços
+    Extensão de Sinal: Converte imediatos de 16 para 32 bits
+    Deslocadores: Ajustam valores para alinhamento correto de endereços
+    Multiplexadores: Selecionam entre múltiplas fontes de dados
+
+4. Conjunto de Instruções Implementadas
+
+O processador implementa um subconjunto das instruções MIPS:
+4.1. Instruções Tipo-R (Formato de Registrador)
+
+    add: Adição de registradores
+    sub: Subtração de registradores
+    and: AND lógico
+    or: OR lógico
+    slt: Set Less Than (comparação)
+
+4.2. Instruções Tipo-I (Formato Imediato)
+
+    addi: Adição com imediato
+    lw: Load Word (carregamento da memória)
+    sw: Store Word (armazenamento na memória)
+    beq: Branch if Equal (desvio condicional)
+
+4.3. Instruções Tipo-J (Formato de Salto)
+
+    j: Jump (salto incondicional)
+
+5. Simulação e Verificação
+5.1. Script de Simulação (run_sim.sh)
+
+O projeto inclui um script bash interativo para facilitar a execução e verificação dos módulos:
+bash
+
+./run_sim.sh
+
+Este script oferece as seguintes funcionalidades:
+
+    Execução de testbenches individuais para cada módulo
+    Execução do testbench do processador completo
+    Seleção personalizada de módulos para simulação
+    Interface amigável com menu de opções
+
+5.2. Testbenches
+
+Cada componente do processador possui um testbench dedicado para verificação:
+
+    Verifica a funcionalidade independente de cada módulo
+    Inclui casos de teste abrangentes para situações normais e limites
+    Fornece métricas de cobertura para avaliar a qualidade dos testes
+
+5.3. Como Executar Testes
+5.3.1. Testbenches na Pasta Principal
+
+Para executar testbenches que já estão na pasta principal, use o script run_sim.sh e selecione a opção correspondente no menu.
+5.3.2. Testbenches na Pasta testbenchs
+
+Para executar testbenches adicionais armazenados na pasta testbenchs:
+
+    Mova os arquivos desejados para a pasta principal:
+    bash
+
+    cp testbenchs/modulo_especifico_tb.sv ./
+
+    Execute o script run_sim.sh e selecione a opção de teste personalizado
+
+5.3.3 memfile.dat
+Visão Geral
+
+O arquivo memfile.dat contém o programa MIPS que é executado pelo processador durante a simulação. Cada linha representa uma instrução de 32 bits em formato hexadecimal. No total, este programa contém 18 instruções que demonstram diversas funcionalidades do processador MIPS.
+
+Decodificação das Instruções
+
+Endereço	Código Hexadecimal	Instrução Assembly	Descrição
+0x00	   20020005	            addi $2, $0, 5	    Armazena o valor 5 no registrador $2
+0x04	   2003000c	            addi $3, $0, 12	    Armazena o valor 12 no registrador $3
+0x08	   2067fff7	            addi $7, $3, -9	    Subtrai 9 de $3 e armazena em $7 (12-9=3)
+0x0c	   00e22025	            or $4, $7, $2	    OR bit a bit de $7 e $2, armazena em $4 (3 OR 5 = 7)
+0x10	   00642824	            and $5, $3, $4	    AND bit a bit de $3 e $4, armazena em $5 (12 AND 7 = 4)
+0x14	   00a42820	            add $5, $5, $4	    Adiciona $5 e $4, armazena em $5 (4+7=11)
+0x18	   10a7000a	            beq $5, $7, 10	    Desvia 10 instruções à frente se $5=$7 (não tomado, pois 11≠3)
+0x1c	   0064202a	            slt $4, $3, $4	    Define $4=1 se $3<$4, senão $4=0 (não é, pois 12>7, então $4=0)
+0x20	   10800001	            beq $4, $0, 1	    Desvia 1 instrução à frente se $4=$0 (tomado, pois $4=0)
+0x24	   20050000	            addi $5, $0, 0	    [Instrução ignorada pelo desvio]
+0x28	   00e2202a	            slt $4, $7, $2	    Define $4=1 se $7<$2, senão $4=0 (verdadeiro, pois 3<5, então $4=1)
+0x2c	   00853820	            add $7, $4, $5	    Adiciona $4 e $5, armazena em $7 (1+11=12)
+0x30	   00e23822	            sub $7, $7, $2	    Subtrai $2 de $7, armazena em $7 (12-5=7)
+0x34	   ac670044	            sw $7, 68($3)	    Armazena valor de $7 na memória: endereço $3+68 (12+68=80)
+0x38	   8c020050	            lw $2, 80($0)	    Carrega valor da memória no endereço 80 para $2 (valor=7)
+0x3c	   08000011	            j 17	            Pula para instrução no endereço 0x44 (PC=4×17=68)
+0x40	   20020001	            addi $2, $0, 1	    Armazena o valor 1 no registrador $2
+0x44	   ac020054	            sw $2, 84($0)	    Armazena valor de $2 na memória: endereço 84
+
+Análise do Programa
+
+Este programa demonstra um teste abrangente das capacidades do processador MIPS, cobrindo:
+1. Operações Aritméticas e Lógicas
+
+    Aritméticas: addi, add, sub
+    Lógicas: and, or
+    Comparação: slt (Set Less Than)
+
+2. Acesso à Memória
+
+    Leitura: lw (Load Word)
+    Escrita: sw (Store Word)
+
+3. Controle de Fluxo
+
+    Desvio Condicional: beq (Branch if Equal)
+    Salto Incondicional: j (Jump)
+
+4. Sequência Lógica do Programa
+
+    Inicialização (0x00-0x08):
+        Configura $2=5, $3=12, $7=3
+
+    Operações Lógicas (0x0c-0x10):
+        OR: $4=7
+        AND: $5=4
+
+    Operações Aritméticas (0x14):
+        ADD: $5=11
+
+    Desvio Condicional (0x18-0x24):
+        Tenta desviar 10 instruções (não tomado)
+        Compara $3<$4 (resultado: falso, $4=0)
+        Desvia 1 instrução se $4=0 (tomado)
+
+    Operações Adicionais (0x28-0x30):
+        Compara $7<$2 (resultado: verdadeiro, $4=1)
+        Soma registradores: $7=12
+        Subtrai registradores: $7=7
+
+    Acesso à Memória (0x34-0x38):
+        Armazena $7 na memória[80]
+        Carrega da memória[80] para $2
+
+    Salto e Finalização (0x3c-0x44):
+        Salta para o endereço 0x44
+        [Instrução ignorada pelo salto]
+        Armazena $2 na memória[84]
+
+Importância no Projeto
+
+Este arquivo memfile.dat serve vários propósitos essenciais:
+
+    Demonstração de Funcionalidade: Exercita todas as principais instruções implementadas no processador.
+
+    Testbench Integrado: Fornece um caso de teste abrangente que valida o processador completo.
+
+    Verificação do Caminho de Dados: Testa todos os caminhos de dados possíveis através do processador.
+
+    Validação do Controlador: Exercita todos os sinais de controle gerados pela unidade de controle.
+
+    Referência Educacional: Demonstra como as instruções MIPS são codificadas em formato hexadecimal e como um programa MIPS pode ser estruturado.
+
+Como o Arquivo é Utilizado
+
+Na simulação, o arquivo memfile.dat é carregado na memória de instruções (instruction_memory.sv) durante a inicialização através da diretiva SystemVerilog $readmemh:
+Verilog
+
+initial begin
+    $readmemh("memfile.dat", RAM);
+end
+
+Este comando lê cada linha do arquivo como um valor hexadecimal de 32 bits e os carrega sequencialmente na memória de instruções, começando do endereço 0.
+
+O arquivo memfile.dat é um componente crucial deste projeto que permite testar o processador MIPS monociclo com um programa real. A sequência cuidadosamente projetada de instruções exercita todas as funcionalidades principais do processador e demonstra a execução correta de um programa completo.
+
+A verificação bem-sucedida deste programa confirma que todos os componentes do processador estão funcionando corretamente juntos, desde a busca de instruções até a escrita em memória, passando por todas as operações aritméticas, lógicas e de controle de fluxo implementadas.
+
+6. Arquitetura do Processador
+
+O processador MIPS implementado segue uma arquitetura monociclo, onde cada instrução é executada em um único ciclo de clock, passando pelas seguintes etapas:
+
+    Busca (Fetch): Obtém a instrução da memória
+    Decodificação (Decode): Interpreta a instrução e config ura sinais de controle
+    Execução (Execute): Realiza a operação na ULA
+    Acesso à Memória (Memory): Lê ou escreve na memória de dados (se necessário)
+    Write Back: Escreve o resultado no banco de registradores (se necessário)
+
+6.1. Diagrama de Blocos Simplificado
+
+                           +------------------+
+                           |    Memória de    |
+                           |    Instruções    |
+                           +--------+---------+
+                                    |
+                                    v
+            +---------------------+-----------------------+
+            |                     |                      |
+            |  +---------------+  |  +---------------+   |
+            |  |  Controller   |  |  |   Datapath    |   |
+            |  | (Decodifica e |  |  | (Executa as   |   |
+            |  |  controla)    |  |  |  operações)   |   |
+            |  +-------+-------+  |  +-------+-------+   |
+            |          |          |          |           |
+            +----------+----------+----------+-----------+
+                       |                     |
+                       v                     v
+                   +----------------------------+
+                   |       Memória de           |
+                   |         Dados              |
+                   +----------------------------+
+
+                   7. Análise de Desempenho
+7.1. Tempo de Ciclo
+
+O processador monociclo tem um tempo de ciclo fixo, determinado pelo caminho crítico (instrução mais lenta).
+7.2. Vantagens e Limitações
+
+Vantagens:
+
+    Design simples e direto
+    Controle simplificado
+    Fácil de implementar e entender
+
+Limitações:
+
+    Frequência de clock limitada pelo caminho mais lento
+    Menor desempenho comparado a designs pipeline
+    Utilização ineficiente de recursos de hardware
+
+8. Conclusão
+
+Este projeto implementa com sucesso um processador MIPS monociclo funcional, capaz de executar um subconjunto das instruções MIPS. A implementação modular facilita a compreensão da arquitetura e permite a verificação individual de cada componente.
+
+O projeto serve como uma base sólida para entender os princípios fundamentais de arquitetura de computadores e pode ser estendido para incluir mais instruções ou aprimorado para implementações mais eficientes como um processador pipeline.

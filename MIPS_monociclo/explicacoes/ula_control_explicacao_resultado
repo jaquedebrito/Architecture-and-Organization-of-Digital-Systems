@@ -1,0 +1,119 @@
+Análise e Verificação do Módulo ula_control do Processador MIPS
+
+1. Introdução
+
+Este documento apresenta a análise, verificação e resultados do módulo ula_control, responsável por gerar os sinais de controle para a ULA (Unidade Lógico-Aritmética) do processador MIPS. O módulo é parte crucial do fluxo de controle do processador, traduzindo sinais de alto nível do controle principal (main_control) e o campo de função da instrução (funct) em sinais específicos para a ULA.
+2. Descrição do Módulo ula_control
+
+O módulo ula_control recebe dois principais sinais de entrada:
+
+    ULAop [1:0]: Sinal de 2 bits do controle principal que indica a classe da operação.
+    funct [5:0]: Campo de função da instrução (para instruções tipo-R).
+
+E gera como saída:
+
+    ULAcontrol [2:0]: Sinal de 3 bits que controla diretamente o comportamento da ULA.
+
+Mapeamento de Operações
+ULAcontrol	Operação	Descrição
+000		AND		Operação lógica AND bit a bit
+001		OR		Operação lógica OR bit a bit
+010		ADD		Adição
+110		SUB		Subtração
+111		SLT		Set Less Than (coloca 1 se a<b, 0 caso contrário)
+
+Tabela de Decodificação
+Caso	ULAop	funct	ULAcontrol	Uso Principal
+1	00	xxxxxx	010 (ADD)	Cálculo de endereços (LW/SW)
+2	01	xxxxxx	110 (SUB)	Comparação para branch (BEQ)
+3	10	100000	010 (ADD)	R-type ADD
+4	10	100010	110 (SUB)	R-type SUB
+5	10	100100	000 (AND)	R-type AND
+6	10	100101	001 (OR)	R-type OR
+7	10	101010	111 (SLT)	R-type SLT
+8	10	outros	010 (ADD)	Valor default seguro
+9	11/xx	xxxxxx	010 (ADD)	Valor default seguro
+
+3. Resultados da Verificação
+3.1 Processo de Verificação
+
+O módulo ula_control foi verificado usando um testbench abrangente que testou:
+
+    Todos os valores possíveis de ULAop (00, 01, 10, 11)
+    Todos os códigos de função relevantes
+    Casos de borda e valores inválidos/indefinidos
+    Respostas a alterações rápidas nas entradas
+
+3.2 Resultados dos Testes
+
+O testbench executou 10 testes específicos, cobrindo todos os casos importantes:
+
+#	Teste			ULAop	funct	ULAcontrol Esperado	Resultado
+1	LW/SW			00	xxxxxx	010 (ADD)		PASS
+2	BEQ			01	xxxxxx	110 (SUB)		PASS
+3	Default(ULAop=11)	11	xxxxxx	010 (ADD)		PASS
+4	R-type ADD		10	100000	010 (ADD)		PASS
+5	R-type SUB		10	100010	110 (SUB)		PASS
+6	R-type AND		10	100100	000 (AND)		PASS
+7	R-type OR		10	100101	001 (OR)		PASS
+8	R-type SLT		10	101010	111 (SLT)		PASS
+9	R-type Invalid funct	10	111111	010 (ADD)		PASS
+10	Undefined ULAop		xx	100000	010 (ADD)		PASS
+
+Resultado Final:
+
+    Total de testes: 10
+    Testes aprovados: 10 (100%)
+    Testes reprovados: 0 (0%)
+
+3.3 Análise de Cobertura
+
+A análise de cobertura dos testes mostra:
+
+    Cobertura de ULAop: 100% (4/4)
+    Cobertura de funct: 100% (6/6)
+    Cobertura de ULAcontrol: 62.5% (5/8)
+
+A cobertura de 62.5% para ULAcontrol é adequada, pois os três valores não cobertos (011, 100, 101) não são utilizados no padrão de codificação da ULA do MIPS.
+4. Análise do Comportamento
+4.1 Comportamento para Instruções Padrão
+
+    Instruções de Acesso à Memória (LW/SW):
+        O módulo gera corretamente ULAcontrol=010 (ADD), permitindo o cálculo de endereços como base+offset.
+
+    Instruções de Branch (BEQ):
+        O módulo gera corretamente ULAcontrol=110 (SUB), permitindo a comparação para determinar se duas condições são iguais.
+
+    Instruções R-type:
+        Todas as cinco operações principais são suportadas: ADD, SUB, AND, OR e SLT.
+        Os códigos funct são decodificados corretamente para os respectivos sinais ULAcontrol.
+
+4.2 Tratamento de Casos Especiais
+
+    Valores inválidos de funct: São tratados como ADD (010), proporcionando um comportamento seguro para instruções não reconhecidas.
+
+    Valores indefinidos/inválidos de ULAop: São tratados como ADD (010), garantindo um comportamento previsível mesmo em situações de erro.
+
+4.3 Compatibilidade com a ULA
+
+O módulo ula_control gera sinais totalmente compatíveis com a implementação corrigida da ULA, garantindo:
+
+    Suporte completo a todas as operações básicas do processador MIPS
+    Tratamento adequado de casos especiais e valores inválidos
+    Comportamento consistente com as especificações do processador
+
+5. Conclusão
+
+O módulo ula_control está corretamente implementado e verificado, atendendo a todas as especificações necessárias para o processador MIPS. A verificação abrangente mostrou que:
+
+    O módulo suporta corretamente todas as operações requeridas (ADD, SUB, AND, OR, SLT)
+    Trata adequadamente casos especiais e valores inválidos
+    É totalmente compatível com o módulo ULA corrigido anteriormente
+
+Este módulo está pronto para integração no sistema completo do processador MIPS, fornecendo o controle adequado para a ULA em todas as instruções suportadas.
+
+Notas adicionais:
+
+    A implementação prioriza a segurança, usando ADD como operação padrão para casos inválidos
+    O módulo está em conformidade com as especificações do MIPS e com os requisitos específicos do projeto
+

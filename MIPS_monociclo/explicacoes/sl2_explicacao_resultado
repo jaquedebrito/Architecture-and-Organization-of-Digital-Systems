@@ -1,0 +1,138 @@
+Módulo de Deslocamento à Esquerda (sl2) do Processador MIPS
+Descrição do Módulo
+
+O módulo sl2 implementa uma operação de deslocamento à esquerda de 2 bits para o processador MIPS. Esta operação é equivalente a multiplicar o valor de entrada por 4, e é utilizada principalmente para cálculos de endereço em instruções de desvio e salto.
+Funcionalidade
+
+O módulo de deslocamento à esquerda:
+
+    Desloca o valor de entrada: Move todos os bits 2 posições para a esquerda
+    Insere zeros: Preenche com zeros as 2 posições menos significativas que ficam vazias
+    Descarta bits: Os 2 bits mais significativos da entrada são perdidos durante a operação
+    Operação combinacional: Funciona sem clock, gerando a saída imediatamente
+
+Resultados da Verificação
+
+O testbench executou uma série de 11 testes, cobrindo diferentes casos de uso do deslocamento à esquerda. Todos os testes passaram com 100% de sucesso, demonstrando o correto funcionamento do módulo.
+Testes de Valores Específicos
+
+    Valor Zero:
+        Input: a = 0x00000000
+        Output: y = 0x00000000
+        Status: PASS
+
+    Valor Positivo Pequeno:
+        Input: a = 0x00000001
+        Output: y = 0x00000004
+        Status: PASS
+
+    Valor Médio:
+        Input: a = 0x00001234
+        Output: y = 0x000048D0
+        Status: PASS
+
+    Valor Grande:
+        Input: a = 0x12345678
+        Output: y = 0x48D159E0
+        Status: PASS
+
+    Valor Máximo de 30 bits:
+        Input: a = 0x3FFFFFFF
+        Output: y = 0xFFFFFFFC
+        Status: PASS
+
+    Overflow de Bits (MSB=1):
+        Input: a = 0x7FFFFFFF
+        Output: y = 0xFFFFFFFC
+        Status: PASS
+
+    Perda de MSBs:
+        Input: a = 0xC0000000
+        Output: y = 0x00000000
+        Status: PASS
+
+    Valor Negativo:
+        Input: a = 0xFFFFFFFF
+        Output: y = 0xFFFFFFFC
+        Status: PASS
+
+    Valores nos Bits Substituídos:
+        Input: a = 0x00000003
+        Output: y = 0x0000000C
+        Status: PASS
+
+    Padrão de Bits Alternados:
+        Input: a = 0x55555555
+        Output: y = 0x55555554
+        Status: PASS
+
+    Caso de Borda - Próximo ao Overflow:
+        Input: a = 0x3FFFFFFE
+        Output: y = 0xFFFFFFF8
+        Status: PASS
+
+Análise de Cobertura
+
+A cobertura de teste foi completa, abrangendo:
+
+    Cobertura de Faixa de Entrada: 100% (5/5)
+        Valores zero: Coberto
+        Valores pequenos/médios: Cobertos
+        Valores grandes: Cobertos
+        Valores com MSBs significativos: Cobertos
+        Valores negativos/muito grandes: Cobertos
+
+    Cobertura de Comportamento de Saída: 100% (4/4)
+        Saída zero: Coberta
+        Saída positiva: Coberta
+        Saída negativa/grande: Coberta
+        Overflow/perda de bits: Coberta
+
+Análise de Comportamento
+
+O módulo de deslocamento à esquerda demonstrou:
+
+    Deslocamento Correto: Todos os valores são deslocados 2 posições à esquerda
+    Inserção de Zeros: Os 2 bits menos significativos são preenchidos com zeros
+    Perda de Bits: Os 2 bits mais significativos são perdidos conforme esperado
+    Multiplicação por 4: O resultado é equivalente a multiplicar o valor de entrada por 4
+
+Implementação
+
+A implementação do módulo é simples e eficiente:
+Verilog
+
+assign y = {a[29:0], 2'b00};
+
+Esta construção:
+
+    Seleciona os 30 bits menos significativos da entrada (a[29:0])
+    Concatena com dois bits zero (2'b00) na posição menos significativa
+    O resultado é um deslocamento à esquerda de 2 bits, com os 2 bits mais significativos descartados
+
+Importância para o Processador MIPS
+
+O módulo de deslocamento à esquerda é crucial para o funcionamento do processador MIPS, sendo utilizado em:
+
+    Cálculo de Endereços de Desvio: Em instruções de desvio condicional (BEQ, BNE), o deslocamento do endereço alvo é multiplicado por 4 para obter o deslocamento em bytes
+    Cálculo de Endereços de Salto: Em instruções de salto (J, JAL), o endereço de destino é deslocado para alinhar com a fronteira de palavras (word-aligned)
+    Alinhamento de Memória: Como instruções e dados são armazenados em palavras de 4 bytes, o deslocamento é necessário para converter índices em endereços reais
+
+Características para MIPS
+
+No contexto do MIPS, este módulo tem características importantes:
+
+    Zero Propagation Delay: Sendo lógica combinacional, não adiciona atraso de ciclo
+    Comportamento Consistente: Funciona de forma previsível para entradas válidas
+    Limitações Conhecidas: A perda dos 2 bits mais significativos é uma característica esperada e gerenciada pelo design do processador
+
+Conclusão
+
+O módulo sl2 foi verificado com sucesso, demonstrando funcionalidade perfeita no deslocamento à esquerda de 2 bits. Os resultados do testbench confirmam que:
+
+    O módulo desloca corretamente todos os valores 2 bits à esquerda
+    Os 2 bits menos significativos são preenchidos com zeros
+    O comportamento com valores extremos e casos de borda é correto
+    A implementação é eficiente e adequada para uso no processador MIPS
+
+Esta funcionalidade é essencial para o processador MIPS, fornecendo um mecanismo simples mas crítico para o cálculo de endereços em instruções de controle de fluxo, mantendo o alinhamento adequado para o acesso à memória de instruções e dados.

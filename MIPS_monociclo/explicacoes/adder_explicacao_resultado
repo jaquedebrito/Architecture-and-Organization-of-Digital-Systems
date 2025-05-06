@@ -1,0 +1,63 @@
+Módulo Somador (adder) do Processador MIPS
+Descrição do Módulo
+
+O módulo adder implementa um somador de 32 bits utilizado em várias partes do processador MIPS. Este componente é responsável por realizar operações de soma entre dois valores de 32 bits, retornando o resultado da operação.
+Funcionalidade
+
+O somador é um componente fundamental do processador MIPS, sendo utilizado para:
+
+    Atualização do Program Counter (PC): Calcula PC+4 para avançar à próxima instrução
+    Cálculo de endereços de desvio (branch): Soma o PC com o offset (deslocamento) para desvios condicionais
+    Cálculo de endereços para acesso à memória: Utilizado em instruções de load/store para calcular endereços efetivos
+    Operações aritméticas: Utilizado pela ULA para implementar a operação ADD
+Resultados da Verificação
+
+O testbench executou uma bateria de 154 testes, cobrindo diversos cenários e casos de uso. Todos os testes foram aprovados, indicando que o somador funciona corretamente para todos os casos testados.
+Testes Básicos
+
+    Soma de zeros: Verifica o comportamento com operandos zero
+    Valores pequenos e médios: Verifica operações com números comuns
+    Valores grandes: Testa o comportamento com números próximos aos limites de 32 bits
+
+Testes de Casos MIPS Específicos
+
+    PC+4: Simula o avanço normal do Program Counter
+    Branch positivo/negativo: Verifica cálculos de endereço para desvios condicionais
+    Load/Store offset: Testa cálculo de endereços para acesso à memória
+    Stack operations: Verifica operações de push/pop na pilha
+
+Testes de Overflow e Carry
+
+    Overflow positivo → negativo: Quando o resultado de dois números positivos é negativo
+    Overflow negativo → positivo: Quando o resultado de dois números negativos é positivo
+    Propagação de carry: Verifica a propagação correta do bit de carry em todos os 32 bits
+
+Testes de Padrões de Bits
+
+    Bits alternados: Testa com padrões como 0x55555555 e 0xAAAAAAAA
+    Bytes repetidos: Verifica comportamento com padrões como 0x01010101
+    Testes sistemáticos por byte: Verifica cada byte individualmente
+
+Análise de Cobertura
+
+    Total de testes: 154 casos de teste
+    Taxa de aprovação: 100% (todos os testes passaram)
+    Cobertura de valores: 17.19% (esperado, dado o espaço de estados muito grande para 32 bits)
+    Casos MIPS testados: 15 casos específicos para o processador MIPS
+    Casos de overflow testados: 3 cenários diferentes
+    Casos especiais testados: 34 casos de borda e críticos
+
+Importância para o Processador MIPS
+
+O somador é um componente crítico para o funcionamento do processador MIPS, sendo utilizado em:
+
+    Unidade de Controle de PC: Para calcular o endereço da próxima instrução
+    Unidade de Branch: Para determinar o endereço alvo de desvios condicionais
+    Unidade de Acesso à Memória: Para calcular endereços efetivos em instruções load/store
+    ULA (Unidade Lógico-Aritmética): Como parte da implementação da operação de adição
+
+Conclusão
+
+O módulo adder demonstrou funcionamento correto e robusto em todos os casos de teste, o que é essencial para a operação adequada do processador MIPS. A verificação extensiva garantiu que o somador lida corretamente com valores positivos, negativos, casos de overflow, e todas as necessidades específicas do MIPS.
+
+O resultado da verificação confirma que o somador implementado atende completamente aos requisitos funcionais do processador MIPS e está pronto para uso em seu projeto completo.

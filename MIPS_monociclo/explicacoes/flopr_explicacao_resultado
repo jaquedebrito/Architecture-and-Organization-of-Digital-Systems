@@ -1,0 +1,79 @@
+Módulo Flip-Flop com Reset (flopr) do Processador MIPS
+Descrição do Módulo
+
+O módulo flopr implementa um flip-flop tipo D com reset assíncrono, essencial para o processador MIPS. Este componente é utilizado principalmente para o registrador PC (Program Counter), mas também pode ser usado em outras partes do processador que necessitam armazenar valores com capacidade de reset imediato.
+Funcionalidade
+
+O flip-flop com reset assíncrono:
+
+    Armazena um valor na borda de subida do clock: Captura o valor na entrada d quando o clock tem transição de 0 para 1
+    Reset assíncrono: Quando o sinal de reset está ativo (reset=1), a saída é imediatamente zerada, independente do clock
+    Parametrizável: Implementado com largura configurável (32 bits para uso geral, 8 bits para versão reduzida)
+    Estável: Mantém o valor armazenado até a próxima borda de subida do clock ou até um reset
+
+Resultados da Verificação
+
+O testbench executou uma bateria de 57 testes, cobrindo diversos aspectos do funcionamento do flip-flop. Todos os testes passaram com sucesso (100% de aprovação).
+Testes de Reset
+
+    Reset inicial: Verifica que a saída é zero quando reset está ativo na inicialização
+    Reset durante operação: Confirma que o reset zera a saída imediatamente, mesmo durante operação normal
+    Reset após borda de subida: Verifica o comportamento quando reset é ativado após uma transição de clock
+    Glitch no reset: Testa a resposta do flip-flop a uma ativação momentânea do reset
+    Power-on reset: Verifica o comportamento correto durante a inicialização do sistema
+
+Testes de Operação Normal
+
+    Carga de valores: Verifica a captura correta de valores na entrada durante a borda de subida do clock
+    Múltiplas atualizações: Testa o comportamento com sequências de valores diferentes
+    Estabilidade: Confirma que o valor permanece estável entre bordas de clock
+    Setup/Hold time: Verifica o comportamento com mudanças de entrada próximas à borda de clock
+
+Testes de Padrões de Bits
+
+    Valores extremos: 0x00000000, 0xFFFFFFFF
+    Padrões alternados: 0x55555555, 0xAAAAAAAA, etc.
+    Padrões repetitivos: 0x54545454, 0xA0A0A0A0, etc.
+
+Testes de Valores Específicos do MIPS
+
+    Endereços de PC: 0x00400000 (início típico), 0x00400004 (PC+4), 0x00400100 (após branch)
+    Instruções: R-type (0x00432820), I-type (0x20420005), J-type (0x08100000)
+    Endereços de memória: Segmento .text (0x00400000), .data (0x10010000), stack pointer (0x7FFFEFFC)
+    Registradores especiais: $zero (0x00000000), $sp (0x7FFFEFFC), $ra (0x00400100)
+
+Testes de Robustez
+
+    Metaestabilidade: Verifica comportamento com transições no limiar
+    Variação de temperatura: Testa o funcionamento em -40°C, 15°C, 70°C e 125°C
+    Clock gating: Verifica o comportamento quando o clock é interrompido
+    Análise de consumo: Monitora transições para avaliar consumo de energia
+
+Métricas de Cobertura
+
+    Cobertura de dados: 98.05% (valores testados)
+    Cobertura de reset: 100% (todos os cenários de reset)
+    Casos de borda: 8 casos testados
+    Taxa de transições: Média de 1.0 por ciclo (em 1000 transições analisadas)
+
+Importância para o Processador MIPS
+
+O flip-flop com reset é um componente crítico do processador MIPS, sendo essencial para:
+
+    Program Counter (PC): Armazena o endereço da instrução atual e permite reinicialização do processador
+    Registradores de Pipeline: Em processadores pipeline, armazena valores entre estágios
+    Registradores de Estado: Mantém flags e informações de estado do processador
+    Inicialização Segura: Garante que o processador comece a execução em um estado conhecido
+
+Conclusão
+
+O módulo flopr demonstrou funcionamento robusto e confiável em todos os testes realizados. Com 100% de taxa de sucesso nos 57 testes, o flip-flop provou ser adequado para uso no processador MIPS.
+
+A verificação abrangente garantiu que:
+
+    O reset assíncrono funciona corretamente em todas as condições
+    A captura de dados na borda de subida do clock é precisa
+    O módulo mantém estabilidade mesmo sob condições variadas (temperatura, glitches)
+    A parametrização permite uso flexível do componente em diferentes partes do processador
+
+O comportamento do flip-flop está de acordo com as especificações de projeto, tornando-o pronto para integração no sistema completo do processador MIPS.

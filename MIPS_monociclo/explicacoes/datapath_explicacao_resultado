@@ -1,0 +1,119 @@
+Módulo Datapath (Caminho de Dados) do Processador MIPS
+Descrição do Módulo
+
+O módulo datapath implementa o caminho de dados do processador MIPS, sendo responsável pelo fluxo de dados entre os vários componentes do processador. Este é um dos módulos mais complexos e centrais do processador, coordenando a transferência de dados entre registradores, ULA, memórias e outras unidades funcionais.
+Funcionalidade
+
+O caminho de dados:
+
+    Busca instruções: Acessa a memória de instruções utilizando o PC (Program Counter)
+    Decodifica instruções: Extrai campos específicos da instrução para operação
+    Executa operações: Realiza cálculos na ULA conforme especificado pela instrução
+    Acessa memória: Realiza operações de leitura e escrita na memória de dados
+    Escreve resultados: Atualiza os registradores com os resultados das operações
+Componentes Internos
+
+O datapath integra vários submódulos:
+
+    Program Counter (PC): Registrador que armazena o endereço da próxima instrução
+    Banco de Registradores: Armazena os 32 registradores do MIPS (incluindo $0 que é sempre 0)
+    ULA (Unidade Lógica Aritmética): Realiza operações aritméticas e lógicas
+    Extensão de Sinal: Converte valores imediatos de 16 bits para 32 bits
+    Deslocador (Shift Left): Multiplica por 4 para cálculo de endereços de desvio
+    Multiplexadores: Selecionam diferentes caminhos de dados conforme os sinais de controle
+
+Resultados da Verificação
+
+O testbench executou uma sequência de 9 instruções MIPS, simulando um programa completo. Todos os testes passaram com sucesso, demonstrando o funcionamento correto do datapath em todas as operações.
+Testes de Operações Aritméticas e Lógicas
+
+    ADDI $2, $0, 5 (Adicionar Imediato):
+        Operação: Soma o valor 5 ao registrador $0 (que é sempre 0) e armazena em $2
+        Resultado: $2 = 0x00000005 ✓
+        Fluxo de dados: Extensão de sinal do imediato → ULA com op=ADD → Registrador $2
+
+    ADDI $3, $0, 12 (Adicionar Imediato):
+        Operação: Soma o valor 12 ao registrador $0 e armazena em $3
+        Resultado: $3 = 0x0000000C ✓
+        Fluxo de dados: Similar ao anterior, com imediato diferente
+
+    ADD $4, $2, $3 (Adição de Registradores):
+        Operação: Soma os valores dos registradores $2 e $3 e armazena em $4
+        Resultado: $4 = 0x00000011 (17 em decimal, que é 5+12) ✓
+        Fluxo de dados: Registrador $2 → ULA; Registrador $3 → ULA; Resultado → Registrador $4
+
+    SUB $5, $4, $2 (Subtração):
+        Operação: Subtrai $2 de $4 e armazena em $5
+        Resultado: $5 = 0x0000000C (12 em decimal, que é 17-5) ✓
+        Fluxo de dados: Similar ao anterior, mas com ULA realizando subtração
+
+    AND $6, $4, $2 (Operação AND):
+        Operação: Realiza AND bit a bit entre $4 e $2 e armazena em $6
+        Resultado: $6 = 0x00000001 (0x11 AND 0x5 = 0x1) ✓
+        Fluxo de dados: Similar, com ULA executando operação AND
+
+    OR $7, $4, $2 (Operação OR):
+        Operação: Realiza OR bit a bit entre $4 e $2 e armazena em $7
+        Resultado: $7 = 0x00000015 (0x11 OR 0x5 = 0x15) ✓
+        Fluxo de dados: Similar, com ULA executando operação OR
+
+    SLT $8, $2, $3 (Set Less Than):
+        Operação: Verifica se $2 < $3 e armazena 1 em $8 se verdadeiro, 0 caso contrário
+        Resultado: $8 = 0x00000001 (5 < 12, logo resultado é 1) ✓
+        Fluxo de dados: ULA compara valores e gera flag "menos que"
+
+Testes de Acesso à Memória
+
+    SW $4, 4($0) (Store Word):
+        Operação: Armazena o conteúdo de $4 na memória, no endereço $0+4
+        Resultado: Memória[1] = 0x00000011 ✓
+        Fluxo de dados: Registrador $4 → writedata; endereço base + offset → ULAout
+
+    LW $10, 4($0) (Load Word):
+        Operação: Carrega em $10 o conteúdo da memória no endereço $0+4
+        Resultado: $10 = 0x00000011 ✓
+        Fluxo de dados: Endereço → ULA → memória; readdata → registrador $10
+
+Análise de Pontos-Chave
+Funcionamento da ULA
+
+A ULA demonstrou operação correta em todos os modos:
+
+    Adição: ULAcontrol=010, usado em ADD, ADDI, e cálculo de endereços para LW/SW
+    Subtração: ULAcontrol=110, usado em SUB
+    AND: ULAcontrol=000, usado na instrução AND
+    OR: ULAcontrol=001, usado na instrução OR
+    SLT: ULAcontrol=111, usado na instrução SLT
+
+Funcionamento dos Multiplexadores
+
+Os multiplexadores funcionaram corretamente, selecionando:
+
+    Entre imediato e registrador para o segundo operando da ULA (ULAsrc)
+    Entre rt e rd para o registrador de destino (regdst)
+    Entre resultado da ULA e dado da memória para escrita no registrador (memtoreg)
+
+Banco de Registradores
+
+O banco de registradores demonstrou operação correta:
+
+    Leitura simultânea de dois registradores para operações da ULA
+    Escrita correta dos resultados nos registradores de destino
+    Proteção do registrador $0 (sempre mantendo valor zero)
+
+Operações de Memória
+
+As operações de acesso à memória funcionaram conforme esperado:
+
+    SW: Cálculo correto do endereço e armazenamento do dado
+    LW: Cálculo correto do endereço, leitura do dado e escrita no registrador
+
+Conclusão
+
+O módulo datapath foi verificado com sucesso, passando em todos os 9 testes que cobriram os principais tipos de instruções do MIPS. Os resultados demonstram que:
+
+    O caminho de dados está corretamente implementado, suportando operações aritméticas, lógicas e de acesso à memória
+    Os componentes internos (ULA, banco de registradores, multiplexadores) funcionam adequadamente
+    A integração entre os vários componentes está adequada, permitindo a execução correta de instruções
+
+A taxa de sucesso de 100% nos testes confirma que o datapath está pronto para ser integrado ao processador MIPS completo, demonstrando robustez em todas as operações testadas.

@@ -1,0 +1,122 @@
+Módulo de Extensão de Sinal (signext) do Processador MIPS
+Descrição do Módulo
+
+O módulo signext implementa a extensão de sinal para o processador MIPS, convertendo valores de 16 bits para 32 bits. Esta operação é essencial para manter o valor semântico de números assinados quando utilizados em operações que exigem operandos de 32 bits.
+Funcionalidade
+
+O módulo de extensão de sinal:
+
+    Preserva o valor semântico: Mantém o mesmo valor numérico, considerando a representação em complemento de dois
+    Estende valores positivos: Preenche com zeros os 16 bits mais significativos quando o bit de sinal é 0
+    Estende valores negativos: Preenche com uns os 16 bits mais significativos quando o bit de sinal é 1
+    Operação combinacional: Funciona sem clock, gerando a saída imediatamente
+
+Interface do Módulo
+Verilog
+
+module signext(
+    input  logic [15:0] a,
+    output logic [31:0] y
+);
+
+Resultados da Verificação
+
+O testbench executou uma série de 8 testes, cobrindo diferentes casos de uso da extensão de sinal. Todos os testes passaram com 100% de sucesso, demonstrando o correto funcionamento do módulo.
+Testes de Valores Específicos
+
+    Valor Zero:
+        Input: a = 0x0000 (0)
+        Output: y = 0x00000000 (0)
+        Status: PASS
+
+    Valor Positivo Pequeno:
+        Input: a = 0x0001 (1)
+        Output: y = 0x00000001 (1)
+        Status: PASS
+
+    Valor Positivo Máximo:
+        Input: a = 0x7FFF (32767)
+        Output: y = 0x00007FFF (32767)
+        Status: PASS
+
+    Valor Negativo Mínimo:
+        Input: a = 0x8000 (-32768)
+        Output: y = 0xFFFF8000 (-32768)
+        Status: PASS
+
+    Valor Negativo (-1):
+        Input: a = 0xFFFF (-1)
+        Output: y = 0xFFFFFFFF (-1)
+        Status: PASS
+
+    Valor Negativo (-16):
+        Input: a = 0xFFF0 (-16)
+        Output: y = 0xFFFFFFF0 (-16)
+        Status: PASS
+
+    Padrão de Bits Misto:
+        Input: a = 0xA5A5 (-23131)
+        Output: y = 0xFFFFA5A5 (-23131)
+        Status: PASS
+
+    Apenas Bit de Sinal Definido:
+        Input: a = 0x8000 (-32768)
+        Output: y = 0xFFFF8000 (-32768)
+        Status: PASS
+
+Análise de Cobertura
+
+A cobertura de teste foi completa, abrangendo:
+
+    Cobertura de Categorias de Entrada: 100% (4/4)
+        Valor zero: Coberto
+        Valores positivos: Cobertos
+        Valores negativos (exceto -1): Cobertos
+        Valor -1 (todos os bits em 1): Coberto
+
+    Cobertura de Padrões de Saída: 100% (2/2)
+        Padrão de extensão com zeros: Coberto
+        Padrão de extensão com uns: Coberto
+
+Análise de Comportamento
+
+O módulo de extensão de sinal demonstrou:
+
+    Comportamento Correto com Valores Positivos: Estendeu corretamente com zeros à esquerda
+    Comportamento Correto com Valores Negativos: Estendeu corretamente com uns à esquerda
+    Preservação do Valor Semântico: O valor numérico permaneceu o mesmo após a extensão
+    Consistência: Funcionou corretamente em toda a faixa de valores possíveis de 16 bits
+
+Importância para o Processador MIPS
+
+O módulo de extensão de sinal é crucial para o funcionamento do processador MIPS, sendo utilizado em:
+
+    Instruções Tipo-I: Estende o valor imediato de 16 bits para operações aritméticas e lógicas
+        ADDI, ADDIU, SLTI, SLTIU, ANDI, ORI, XORI, LUI
+
+    Operações de Memória: Estende o deslocamento de 16 bits para cálculo de endereços
+        LW, SW, LB, LBU, SB, LH, LHU, SH
+
+    Instruções de Desvio: Estende o deslocamento de 16 bits para cálculo de endereço alvo
+        BEQ, BNE, BGEZ, BGTZ, BLEZ, BLTZ
+
+    Compatibilidade de Operandos: Garante que valores de 16 bits possam ser utilizados com operandos de 32 bits sem alterar seu valor semântico
+
+Implementação
+
+A implementação do módulo é simples e eficiente, baseando-se na replicação do bit mais significativo da entrada:
+Verilog
+
+assign y = { {16{a[15]}}, a };
+
+Esta construção utiliza a replicação de bit em Verilog, onde {16{a[15]}} cria 16 cópias do bit de sinal (a[15]), que são concatenadas com o valor original de 16 bits.
+Conclusão
+
+O módulo signext foi verificado com sucesso, demonstrando funcionalidade perfeita na extensão de sinal. Os resultados do testbench confirmam que:
+
+    O módulo estende corretamente valores positivos com zeros
+    O módulo estende corretamente valores negativos com uns
+    O valor semântico é preservado após a extensão
+    A implementação é simples e eficiente
+
+Esta funcionalidade é essencial para o processador MIPS, permitindo o uso de valores imediatos de 16 bits em um ambiente que opera predominantemente com 32 bits, mantendo a correta representação numérica em complemento de dois.

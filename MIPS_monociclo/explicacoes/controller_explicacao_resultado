@@ -1,0 +1,162 @@
+Módulo Controller (Controlador) do Processador MIPS
+Descrição do Módulo
+
+Instrução  Op5 Op4 Op3 Op2 Op1 Op0  Código
+R-FORMAT    0   0   0   0   0   0   000000 ✓
+LW          1   0   0   0   1   1   100011 ✓
+SW          1   0   1   0   1   1   101011 ✓
+BEQ         0   0   0   1   0   0   000100 ✓
+
+Sinal      R-type   LW    SW    BEQ
+RegDst     1        0     x     x
+ALUSrc     0        1     1     0
+MemtoReg   0        1     x     x
+RegWrite   1        1     0     0
+MemRead    0        1     0     0
+MemWrite   0        0     1     0
+Branch     0        0     0     1
+ALUOp1     1        0     0     0
+ALUOp0     0        0     0     1
+
+R-FORMAT (9'b100100010):
+RegDst   = 1
+ALUSrc   = 0
+MemtoReg = 0
+RegWrite = 1
+MemRead  = 0
+MemWrite = 0
+Branch   = 0
+ALUOp    = 10
+
+LW (9'b011110000):
+RegDst   = 0
+ALUSrc   = 1
+MemtoReg = 1
+RegWrite = 1
+MemRead  = 1
+MemWrite = 0
+Branch   = 0
+ALUOp    = 00
+
+SW (9'b010001000):
+RegDst   = 0 (x)
+ALUSrc   = 1
+MemtoReg = 0 (x)
+RegWrite = 0
+MemRead  = 0
+MemWrite = 1
+Branch   = 0
+ALUOp    = 00
+
+BEQ (9'b000000101):
+RegDst   = 0 (x)
+ALUSrc   = 0
+MemtoReg = 0 (x)
+RegWrite = 0
+MemRead  = 0
+MemWrite = 0
+Branch   = 1
+ALUOp    = 01
+
+Instrução  RegDst ALUSrc MemtoReg RegWrite MemRead MemWrite Branch ALUOp1 ALUOp0
+R-FORMAT     1      0       0        1        0        0       0      1      0
+LW           0      1       1        1        1        0       0      0      0
+SW           x      1       x        0        0        1       0      0      0
+BEQ          x      0       x        0        0        0       1      0      1
+
+ALUop1	ALUop0	Funct field (F5-F0)	Operation (ULAcontrol)
+0	0	xxxxxx			0010 (ADD)
+X	1	xxxxxx			0110 (SUB)
+1	X	xx0000			0010 (ADD)
+1	X	xx0010			0110 (SUB)
+
+O módulo controller é o cérebro do processador MIPS, responsável pela decodificação das instruções e geração de todos os sinais de controle necessários para conduzir o fluxo de dados através do datapath. Este módulo integra dois componentes principais: o controlador principal (main_control) e o controlador da ULA (ula_control).
+Funcionalidade
+
+O controlador analisa o opcode da instrução atual e gera sinais apropriados para:
+
+    Controlar o fluxo de dados: Determina os caminhos que os dados percorrem no processador
+    Especificar operações: Define quais operações devem ser realizadas pela ULA
+    Gerenciar acessos à memória: Controla operações de leitura e escrita na memória
+    Atualizar registradores: Controla quando e quais registradores são atualizados
+    Controlar o fluxo de execução: Gerencia desvios e saltos no código
+Componentes Internos
+
+    Main Control: Decodifica o opcode e gera a maioria dos sinais de controle
+        Determina o tipo de instrução (R-type, load/store, branch)
+        Gera sinais como regwrite, memread, memwrite, etc.
+        Produz o sinal ULAop para o controlador da ULA
+
+    ULA Control: Determina a operação específica que a ULA deve realizar
+        Recebe ULAop do controlador principal
+        Também recebe o campo funct para instruções tipo-R
+        Gera o sinal ULAcontrol de 3 bits para a ULA
+
+Resultados da Verificação
+
+O testbench executou 6 casos de teste principais, verificando o comportamento do controlador para diferentes tipos de instruções:
+1. Instruções Tipo-R (Aritméticas/Lógicas)
+
+    ADD (op=000000, funct=100000):
+        regdst=1 (seleciona rd como destino)
+        regwrite=1 (habilita escrita no registrador)
+        ULAcontrol=010 (operação ADD)
+        memwrite=0, memread=0 (não acessa memória)
+        Sinais gerados corretamente ✓
+
+    SUB (op=000000, funct=100010):
+        Mesmos sinais de controle que ADD, exceto
+        ULAcontrol=110 (operação SUB)
+        Sinais gerados corretamente ✓
+
+2. Instruções de Acesso à Memória
+
+    LW - Load Word (op=100011):
+        memread=1 (habilita leitura da memória)
+        memtoreg=1 (seleciona dado da memória para escrita no registrador)
+        regwrite=1 (habilita escrita no registrador)
+        ULAsrc=1 (seleciona imediato como operando da ULA)
+        ULAcontrol=010 (operação ADD para cálculo do endereço)
+        Sinais gerados corretamente ✓
+
+    SW - Store Word (op=101011):
+        memwrite=1 (habilita escrita na memória)
+        regwrite=0 (não escreve em registrador)
+        ULAsrc=1 (seleciona imediato como operando da ULA)
+        ULAcontrol=010 (operação ADD para cálculo do endereço)
+        Sinais gerados corretamente ✓
+
+3. Instruções de Desvio Condicional
+
+    BEQ - Branch Equal com zero=0:
+        pcsrc=0 (não toma o desvio)
+        ULAcontrol=110 (operação SUB para comparação)
+        Sinais gerados corretamente ✓
+
+    BEQ - Branch Equal com zero=1:
+        pcsrc=1 (toma o desvio)
+        ULAcontrol=110 (operação SUB para comparação)
+        Sinais gerados corretamente ✓
+
+Análise de Resultados
+
+Todos os 6 casos de teste passaram com sucesso, confirmando que:
+
+    O controlador principal decodifica corretamente o opcode das instruções
+    O controlador da ULA gera os sinais corretos com base no ULAop e campo funct
+    A integração entre main_control e ula_control funciona adequadamente
+    Os sinais de controle são gerados corretamente para todos os tipos de instrução testados
+
+Importância para o Processador MIPS
+
+O controlador é um componente crítico do processador MIPS, sendo responsável por:
+
+    Coordenar a execução: Sincroniza todas as partes do processador
+    Interpretação de instruções: Traduz o código de operação em sinais de controle
+    Desvios condicionais: Implementa a lógica de ramificação do programa
+    Seleção de operações da ULA: Determina a função correta que a ULA deve executar
+
+Um controlador funcionando corretamente é essencial para garantir que o processador execute as instruções conforme esperado, na sequência correta e com os operandos adequados.
+Conclusão
+
+O módulo controller demonstrou funcionamento correto para os principais tipos de instrução do MIPS. A verificação extensiva confirmou que ele gera adequadamente todos os sinais de controle necessários para o datapath do processador, demonstrando que está pronto para ser integrado ao sistema completo.

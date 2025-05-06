@@ -1,0 +1,72 @@
+Módulo Memória de Instruções (instruction_memory) do Processador MIPS
+Descrição do Módulo
+
+O módulo instruction_memory implementa a memória ROM do processador MIPS, responsável por armazenar o programa a ser executado. Esta memória é somente leitura durante a execução normal, sendo carregada com instruções antes do início da simulação através do arquivo "memfile.dat".
+Funcionalidade
+
+A memória de instruções:
+
+    Armazena o programa: Contém as instruções MIPS em formato binário (hexadecimal)
+    Fornece instruções: Quando solicitado, entrega a instrução do endereço requisitado
+    Acesso rápido: Acesso combinacional sem atraso por clock (implementado como ROM)
+    Inicialização externa: Carrega as instruções a partir de um arquivo de memória externo
+Resultados da Verificação
+
+O testbench executou com sucesso, validando a funcionalidade da memória de instruções. Foram carregadas e verificadas 18 instruções do arquivo "memfile.dat", com 100% de aprovação nos testes.
+Análise das Instruções Carregadas
+
+O testbench confirmou que todas as 18 instruções foram carregadas corretamente do arquivo "memfile.dat" e podem ser acessadas pelos endereços apropriados. Estas instruções representam um programa MIPS completo:
+
+    0x20020005 - ADDI $2, $0, 5 - Carrega o valor 5 no registrador $2
+    0x2003000c - ADDI $3, $0, 12 - Carrega o valor 12 no registrador $3
+    0x2067fff7 - ADDI $7, $3, -9 - Adiciona -9 ao registrador $3 e armazena em $7
+    0x00e22025 - OR $4, $7, $2 - Realiza OR entre $7 e $2, armazenando em $4
+    0x00642824 - AND $5, $3, $4 - Realiza AND entre $3 e $4, armazenando em $5
+    0x00a42820 - ADD $5, $5, $4 - Adiciona $5 e $4, armazenando em $5
+    0x10a7000a - BEQ $5, $7, 10 - Branch se $5 e $7 forem iguais (avança 10 instruções)
+    0x0064202a - SLT $4, $3, $4 - Set Less Than: $4 = ($3 < $4) ? 1 : 0
+    0x10800001 - BEQ $4, $0, 1 - Branch se $4 for igual a $0 (avança 1 instrução)
+    0x20050000 - ADDI $5, $0, 0 - Carrega o valor 0 no registrador $5
+    0x00e2202a - SLT $4, $7, $2 - Set Less Than: $4 = ($7 < $2) ? 1 : 0
+    0x00853820 - ADD $7, $4, $5 - Adiciona $4 e $5, armazenando em $7
+    0x00e23822 - SUB $7, $7, $2 - Subtrai $2 de $7, armazenando em $7
+    0xac670044 - SW $7, 68($3) - Armazena o valor de $7 na memória no endereço $3+68
+    0x8c020050 - LW $2, 80($0) - Carrega em $2 o valor da memória no endereço 80
+    0x08000011 - J 17 - Salta para o endereço 17 (PC = 68)
+    0x20020001 - ADDI $2, $0, 1 - Carrega o valor 1 no registrador $2
+    0xac020054 - SW $2, 84($0) - Armazena o valor de $2 na memória no endereço 84
+
+O programa executa uma série de operações aritméticas, lógicas, comparações, desvios condicionais e acessos à memória, demonstrando funcionalidades essenciais do processador MIPS.
+Verificação de Funcionalidade
+
+O testbench verificou os seguintes aspectos críticos:
+
+    Carregamento correto do arquivo: Todas as instruções do "memfile.dat" foram carregadas corretamente
+    Acesso a instruções: Cada instrução pode ser acessada pelo endereço correto
+    Integridade dos dados: As instruções mantêm sua integridade (sem corrupção de bits)
+    Simulação de execução: Simula o comportamento durante a execução do processador
+
+Observações Técnicas
+
+    O testbench ignora o aviso sobre a ordem de memória padrão incompatível com IEEE1364, pois isso não afeta o funcionamento correto do módulo.
+    O sinal de endereço (addr) representa PC/4, já que cada instrução ocupa 4 bytes (32 bits) e o PC seria incrementado de 4 em 4.
+
+Importância para o Processador MIPS
+
+A memória de instruções é um componente essencial do processador MIPS, sendo responsável por:
+
+    Armazenar o programa: Mantém as instruções a serem executadas
+    Fornecer instrução atual: Disponibiliza a instrução apontada pelo PC
+    Definir limite de programa: O tamanho da memória de instruções limita o tamanho do programa
+    Primeira etapa do pipeline: Na arquitetura pipeline, representa o estágio de busca de instrução (IF)
+
+Conclusão
+
+O módulo instruction_memory foi verificado com sucesso, demonstrando funcionalidade perfeita na carga e acesso às instruções. Os resultados do testbench confirmam que:
+
+    O módulo inicializa corretamente com instruções do arquivo "memfile.dat"
+    Cada instrução pode ser acessada pelo seu endereço correspondente
+    O conteúdo da memória mantém-se íntegro
+    Os 18 testes executados apresentaram 100% de aprovação
+
+Estes resultados confirmam que o componente está pronto para ser integrado ao processador MIPS completo, garantindo que o processador poderá carregar e acessar corretamente as instruções do programa.

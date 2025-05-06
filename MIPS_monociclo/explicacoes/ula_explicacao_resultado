@@ -1,0 +1,63 @@
+Modulo ULA do Processador MIPS
+Visão Geral
+
+Este documento apresenta os resultados da ULA (Unidade Lógica e Aritmética) para o processador MIPS. O módulo foi verificado utilizando um testbench abrangente e corrigido para resolver problemas identificados na implementação da operação SLT (Set Less Than) e no tratamento de valores de controle indefinidos.
+
+Resultados dos Testes
+
+O testbench executou uma bateria de 40 testes específicos, divididos em várias categorias para verificar todos os aspectos do funcionamento da ULA. Todos os testes foram aprovados com sucesso.
+Testes por Categoria
+
+    Operações Básicas
+        AND: 100% aprovado (5/5) - Incluindo números positivos, negativos e resultado zero
+        OR: 100% aprovado (6/6) - Incluindo combinações variadas e resultado zero
+        ADD: 100% aprovado (16/16) - Incluindo overflow, carry propagation e casos especiais
+        SUB: 100% aprovado (6/6) - Incluindo resultados positivos, negativos e zero
+        SLT: 100% aprovado (5/5) - Incluindo comparações entre números de mesmo sinal e sinais diferentes
+
+    Testes Específicos para Instruções MIPS
+        Todos aprovados, incluindo instruções como BEQ, ADDI, LUI, JALR e cálculo de endereços para LW/SW
+
+    Testes de Casos Limites
+        Todos aprovados, incluindo operações com valores máximos e mínimos de inteiros de 32 bits
+        Verificação de overflow e underflow em operações aritméticas
+
+    Testes de Padrões de Bits
+        Verificação com padrões alternados (0x55555555, 0xAAAAAAAA)
+        Análise do comportamento com bit patterns específicos
+
+    Testes para Valores Indefinidos
+        Comportamento correto quando ULAcontrol tem valores indefinidos
+        Verificação da convenção: bit LSB=0 → AND, bit LSB=1 → OR
+
+    Testes de Desempenho e Estabilidade
+        Propagação de carry, alternância rápida de operações
+        Comportamento com valores alternados e casos críticos
+
+Estatísticas e Cobertura
+
+    Total de testes: 40
+    Testes aprovados: 40 (100%)
+    Falhas: 0
+    Status final: SUCESSO
+
+Estatísticas detalhadas por operação:
+
+    AND: 5 testes, 0 erros
+    OR: 6 testes, 0 erros
+    ADD: 16 testes, 0 erros
+    SUB: 6 testes, 0 erros
+    SLT: 5 testes, 0 erros
+
+Sinais de controle:
+    3'b010 (ADD) - Usado para instruções R-type ADD e operações de memória (LW/SW)
+    3'b110 (SUB) - Usado para instruções R-type SUB e comparações (BEQ)
+    3'b000 (AND) - Operações lógicas AND
+    3'b001 (OR) - Operações lógicas OR
+    3'b111 (SLT) - Operação Set Less Than, agora com comportamento correto para todos os casos
+
+Conclusão
+
+A ULA do processador MIPS foi verificada com sucesso e as correções implementadas resolveram todos os problemas identificados. O módulo agora apresenta funcionamento correto para todas as operações e casos de teste, incluindo casos especiais e condições limites.
+
+A implementação final é robusta, compatível com as especificações do sistema de controle e pronta para integração no processador MIPS completo.

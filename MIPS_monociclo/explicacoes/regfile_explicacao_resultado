@@ -1,0 +1,141 @@
+Módulo Banco de Registradores (regfile) do Processador MIPS
+Descrição do Módulo
+
+O módulo regfile implementa o banco de registradores do processador MIPS, responsável por armazenar os 32 registradores de uso geral (cada um com 32 bits). Este é um componente central do processador, permitindo leitura simultânea de dois registradores e escrita em um terceiro registrador.
+Funcionalidade
+
+O banco de registradores:
+
+    Fornece acesso a dois registradores simultaneamente: Através de duas portas de leitura independentes (rd1 e rd2)
+    Permite escrita em um registrador: Ativada pelo sinal we3 (write enable)
+    Mantém o registrador $0 sempre com valor zero: Mesmo se houver tentativa de escrita
+    Síncrono para escrita: Escreve na borda de subida do clock quando we3=1
+    Assíncrono para leitura: Leitura acontece imediatamente, sem esperar pelo clock
+
+Resultados da Verificação
+
+O testbench executou uma bateria abrangente de testes, cobrindo diversos aspectos do funcionamento do banco de registradores. Todos os testes passaram, demonstrando o correto funcionamento do módulo.
+Testes Básicos
+
+    Leitura do Registrador Zero: Confirmou que $0 retorna sempre 0x00000000
+    Proteção do Registrador Zero: Verificou que não é possível alterar o valor do registrador $0
+    Escrita e Leitura em Registradores: Testou operações básicas em vários registradores ($1 a $4)
+    Leitura Dual-Port: Validou a capacidade de ler dois registradores diferentes simultaneamente
+
+Testes de Timing
+
+    Acesso Rápido: Verificou a resposta do módulo em condições de timing apertado
+    Tempo de Acesso: Mediu o tempo de resposta para acesso aos registradores (6 unidades de tempo)
+    Timing Relaxado: Testou o comportamento em condições menos restritivas de tempo
+
+Testes de Contenção de Barramento
+
+    Leitura Simultânea do Mesmo Registrador: Verificou a capacidade de ler o mesmo registrador em ambas as portas
+    Leitura Durante Escrita: Testou o comportamento quando um registrador é lido durante sua escrita
+    Leitura Após Escrita: Confirmou a capacidade de ler o valor correto após uma operação de escrita
+
+Testes Específicos do Registrador $7
+
+Testes específicos para o registrador $7, que tem papel especial em alguns programas MIPS:
+
+    Escrita e Leitura: Verificação específica para $7
+    Leitura Dual: Confirmação de leitura em ambas as portas
+    Padrões Alternativos: Teste com diferentes valores (0x77777777, 0xBBBBBBBB, 0x12345678)
+
+Testes de Cobertura Estendida
+
+    Cobertura de Todos os Registradores: Testes abrangentes para registradores $8 a $30
+    Medição de Tempo de Resposta: Análise do tempo entre escrita e leitura para vários registradores
+        Registrador $8: 15 unidades
+        Registradores $9-$30: 10 unidades cada
+
+Testes de Registradores Remanescentes
+
+Testes completos de funcionalidade para todos os 32 registradores ($0 a $31), confirmando a capacidade total do banco de registradores.
+Testes de Corner Case
+
+    Padrões de Bits Especiais: Teste com padrões 0xFFFF0000
+    Escrita Consecutiva Rápida: Verificação de múltiplas escritas consecutivas (0xA00000A0 até 0xA00000A4)
+    Padrão de Escrita-Leitura-Escrita (A-B-A): Teste de sequência complexa de acesso
+    Valores Extremos: Testou valores limites (0xFFFFFFFF, 0x00000000, 0x00000001)
+    Padrões de Bits Individuais: Testou padrões com bits individuais definidos (0x00000001, 0x00000002, 0x00000004, 0x00000008, 0x00000010)
+
+Testes de Paralelismo
+
+    Leitura Dupla Durante Escrita: Verificou a capacidade de ler dois registradores diferentes (reg17 e reg18) enquanto escreve em um terceiro (reg19)
+    Acesso Alternado: Testou sequências de leitura e escrita alternadas no mesmo registrador, confirmando a integridade dos valores
+
+Análise Detalhada dos Resultados
+Performance de Timing
+
+    Acesso Rápido: O banco de registradores respondeu consistentemente em 6 unidades de tempo
+    Escrita para Leitura: O tempo entre escrita e disponibilidade para leitura variou entre 10-15 unidades
+    Fast Timing Tests: Passaram 4/4 testes, confirmando robustez do design
+
+Comportamento com Registrador Zero
+
+O testbench confirmou o comportamento correto do registrador $0:
+
+    Sempre retorna 0x00000000, independente de tentativas de escrita
+    Protegido contra modificações, mesmo quando we3=1 e wa3=0
+
+Comportamento de Read-During-Write
+
+O testbench verificou que quando um registrador está sendo escrito e simultaneamente lido:
+
+    O valor antigo é mantido na saída durante o ciclo de escrita
+    O novo valor só é disponibilizado após a conclusão da escrita Este comportamento é importante para a correta implementação de pipeline no processador.
+
+Dual-Port de Leitura
+
+O banco de registradores demonstrou capacidade completa de fornecer dois valores simultaneamente:
+
+    Quando ra1 e ra2 são diferentes: Fornece dois valores independentes
+    Quando ra1 e ra2 são iguais: Fornece o mesmo valor em ambas as saídas Essa funcionalidade é essencial para instruções que operam com dois operandos fonte.
+
+Padrões de Bits e Valores Extremos
+
+Os testes confirmaram o correto funcionamento com diversos padrões de bits:
+
+    Valores extremos: 0xFFFFFFFF (todos 1s) e 0x00000000 (todos 0s)
+    Bits individuais: Teste de cada posição de bit (bit 0 a bit 4)
+    Padrões alternados: Verificações com diferentes combinações de bits
+
+Estatísticas Gerais dos Testes
+
+Conforme o relatório completo apresentado no final do testbench:
+
+    Duração Total dos Testes: 1026 ns
+    Clock Utilizado: 10ns (100MHz)
+    Total de Testes Executados: 90
+    Taxa de Aprovação: 100% (90/90)
+    Distribuição: 83 testes básicos, 5 testes de corner case, 2 testes de paralelismo
+    Cobertura de Registradores: 100% (32/32 registradores testados)
+    Operações Realizadas: 100 operações de leitura, 92 operações de escrita, 90 acessos simultâneos
+    Registrador Mais Acessado: $7 (83 acessos)
+    Registrador Mais Lido: $7 (72 leituras)
+    Registrador Mais Escrito: $9 (3 escritas)
+    Timing: Atraso médio escrita-leitura de 10, mínimo de 10, máximo de 15
+
+Importância para o Processador MIPS
+
+O banco de registradores é um componente central do processador MIPS:
+
+    Acesso Rápido a Dados: Fornece armazenamento de alta velocidade para operandos frequentemente utilizados
+    Suporte a Instruções: Permite a execução de instruções que utilizam dois operandos fonte e um destino
+    Redução de Acesso à Memória: Minimiza a necessidade de acessos à memória principal, mais lenta
+    Estado do Processador: Mantém o estado atual da execução através dos valores armazenados
+    Interface entre Estágios: Em processadores pipeline, facilita a transferência de dados entre estágios
+
+Conclusão
+
+O módulo regfile foi verificado com sucesso, demonstrando funcionalidade perfeita em todos os testes. Os resultados confirmam que:
+
+    O banco de registradores funciona corretamente para operações de leitura e escrita
+    O registrador $0 é adequadamente mantido com valor zero
+    As duas portas de leitura operam independentemente e sem interferência
+    O timing de acesso é consistente e adequado às necessidades do processador
+    O comportamento em casos extremos, padrões de bits específicos e condições de paralelismo é robusto
+    O banco suporta eficientemente leituras paralelas durante operações de escrita
+
+O banco de registradores está pronto para integração no processador MIPS completo, fornecendo o armazenamento rápido e funcional necessário para a execução eficiente de programas.

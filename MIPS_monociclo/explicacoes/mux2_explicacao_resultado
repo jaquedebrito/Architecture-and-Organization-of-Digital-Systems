@@ -1,0 +1,89 @@
+Módulo Multiplexador 2:1 (mux2) do Processador MIPS
+Descrição do Módulo
+
+O módulo mux2 implementa um multiplexador 2:1 para o processador MIPS. Este componente permite selecionar entre dois valores de entrada baseado em um sinal de seleção, sendo fundamental para diversos pontos de decisão no caminho de dados do processador.
+Funcionalidade
+
+O multiplexador 2:1:
+
+    Seleciona entre duas entradas: Escolhe entre d0 e d1 baseado no valor de s
+    Parametrizável: Implementado com largura configurável (32, 5 ou 1 bit, dependendo do uso)
+    Puramente combinacional: Opera sem clock, gerando saídas imediatamente
+    Alta reutilização: O mesmo design é usado em múltiplos locais do processador
+
+Resultados da Verificação
+
+O testbench executou com sucesso, validando a funcionalidade do multiplexador em três larguras diferentes. Foram realizados 20 testes no total, todos passando com sucesso (100% de aprovação).
+Testes com Multiplexador de 32 bits
+
+    Seleção básica com s=0: Valores distintos em d0 e d1, saída deve refletir d0
+        Entradas: d0=0x12345678, d1=0xABCDEF01, s=0
+        Saída esperada: y=0x12345678 ✓
+
+    Seleção básica com s=1: Valores distintos em d0 e d1, saída deve refletir d1
+        Entradas: d0=0x12345678, d1=0xABCDEF01, s=1
+        Saída esperada: y=0xABCDEF01 ✓
+
+3-4. Ambas entradas com zeros: Testa o comportamento quando ambas entradas são zero
+
+    Comportamento verificado para s=0 e s=1
+    Saída correta: y=0x00000000 para ambos ✓
+
+5-6. PC+4 vs PCBranch: Simula uso real no processador para decisão de branch
+
+    PC+4 (0x00400004) vs PCBranch (0x00400020)
+    Seleção correta baseada em s ✓
+
+7-8. Padrão alternado: Testa com padrões de bits alternados (0x55555555 e 0xAAAAAAAA)
+
+    Verifica integridade da seleção bit a bit
+    Funcionamento correto para s=0 e s=1 ✓
+
+Testes com Multiplexador de 5 bits
+
+9-10. Seleção de registradores: Simula uso para selecionar entre rt e rd nas instruções - Entradas: d0=0x0A, d1=0x19, testado com s=0 e s=1 - Saída correta para ambas seleções ✓
+
+11-12. Registradores extremos: Testa com $0 (0x00) e $31 (0x1F) - Verifica casos limites do banco de registradores - Seleção correta em ambos casos ✓
+
+13-14. Registradores típicos: Testa com $2 (0x02) e $4 (0x04) - Simula caso de uso comum no MIPS - Funcionamento correto para s=0 e s=1 ✓
+Testes com Multiplexador de 1 bit
+
+15-20. Operações bit a bit: Testa todas as combinações possíveis de 1 bit - d0=0/1, d1=0/1, para s=0 e s=1 - Verifica cada caso de seleção de um único bit - Todas combinações funcionaram corretamente ✓
+Análise de Comportamento
+
+O multiplexador 2:1 demonstrou:
+
+    Seleção precisa: Em todos os casos, o valor correto foi selecionado baseado no sinal s
+    Integridade de dados: Os dados foram transmitidos sem alteração em todas as larguras
+    Funcionamento parametrizado: O mesmo design funcionou corretamente com 32, 5 e 1 bit
+    Robustez: Comportamento consistente em diferentes cenários de teste
+
+Importância para o Processador MIPS
+
+O multiplexador 2:1 é um componente fundamental no processador MIPS, sendo utilizado em diversos pontos críticos:
+
+    Seleção de PC: Escolhe entre PC+4 e o endereço de branch/jump
+    Seleção de registrador destino: Escolhe entre rt e rd nas instruções (RegDst)
+    Seleção de operando da ULA: Escolhe entre registrador e valor imediato (ALUSrc)
+    Seleção de dados para escrita: Escolhe entre resultado da ULA e dado da memória (MemtoReg)
+    Decisões de controle: Utilizado em diversos pontos de decisão no caminho de dados
+
+Casos de Uso no Processador MIPS
+
+O testbench simulou vários casos de uso reais do multiplexador no processador:
+
+    MUX PC: Seleção entre PC+4 e endereço de branch (teste 5-6)
+    MUX RegDst: Seleção entre rt e rd como registrador destino (teste 9-14)
+    MUX ALUSrc: Seleção entre registrador e valor imediato como operando da ULA
+    MUX MemtoReg: Seleção entre resultado da ULA e dado da memória para escrita
+
+Conclusão
+
+O módulo mux2 foi verificado com sucesso, demonstrando funcionalidade perfeita em todas as configurações de largura. Os resultados do testbench confirmam que:
+
+    O componente seleciona corretamente entre as duas entradas baseado no sinal de seleção
+    O parâmetro WIDTH funciona corretamente, permitindo a reutilização do módulo
+    O comportamento é consistente em diferentes cenários de teste
+    Todos os 20 testes foram aprovados com 100% de sucesso
+
+Estes resultados confirmam que o multiplexador 2:1 está pronto para ser integrado ao processador MIPS completo, fornecendo a funcionalidade de seleção necessária em diversos pontos do caminho de dados. A capacidade de parametrização facilita sua reutilização, contribuindo para um design modular e eficiente.

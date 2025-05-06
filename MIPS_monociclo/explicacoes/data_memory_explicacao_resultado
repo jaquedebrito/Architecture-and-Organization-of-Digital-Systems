@@ -1,0 +1,61 @@
+Módulo de Memória de Dados (data_memory) do Processador MIPS
+Descrição do Módulo
+
+O módulo data_memory implementa a memória de dados do processador MIPS, responsável por armazenar dados durante a execução do programa. No MIPS, este módulo é acessado pelas instruções de load/store (LW, SW) para ler ou escrever valores na memória.
+Funcionalidade
+
+Visão Geral dos Testes
+
+O testbench executou uma bateria completa de 55 testes, cobrindo aspectos fundamentais do funcionamento da memória de dados. A taxa de sucesso foi de 100%, demonstrando o funcionamento correto e robusto do módulo data_memory.
+Testes Básicos
+
+    Escrita sem leitura: Simula o comportamento da instrução SW, verificando que a escrita é realizada corretamente
+    Leitura após escrita: Simula o comportamento da instrução LW, confirmando a recuperação precisa dos dados armazenados
+    Alternância do sinal memread: Verifica que o dado só é disponibilizado na saída quando memread=1 e retorna a zero quando memread=0
+    Múltiplos endereços: Testa operações de leitura e escrita em vários endereços, confirmando o funcionamento correto do decodificador de endereços
+
+Testes de Padrões de Dados
+
+    Valores extremos: Armazenamento e recuperação de 0x00000000 e 0xFFFFFFFF
+    Padrões alternados: Verificação com 0xAAAAAAAA (padrão 1010...) e 0x55555555 (padrão 0101...)
+    Valores especiais: Testados valores típicos em depuração como 0xDEADBEEF, 0xCAFEBABE, 0xFEEDFACE
+
+Testes de Limites e Estabilidade
+
+    Limites de endereço: Testes completos nos endereços 0 e 63 (limites da memória)
+    Operações simultâneas: Verificação de leitura durante escrita, confirmando o comportamento correto em cenários de acesso concorrente
+    Estabilidade de leitura: Confirmação que dados permanecem estáveis em leituras múltiplas consecutivas
+    Sequência de escritas: Verificação do comportamento em escritas sucessivas no mesmo endereço
+
+Testes de Integridade
+
+    Endereços adjacentes: Confirma que não há vazamento entre posições de memória adjacentes
+    Vazamento de dados: Verifica que dados só são lidos quando re=1, mantendo a integridade dos dados
+    Comportamento do write enable: Confirma que dados só são escritos quando we=1 na borda de subida do clock
+
+Testes de Tempo Crítico
+
+    Transições rápidas: Verificação da resposta da memória em transições rápidas dos sinais de controle
+    Leitura após escrita imediata: Confirmação do comportamento correto quando uma leitura segue imediatamente uma escrita
+    Alternância de endereços: Teste de respostas em alternâncias rápidas de endereços durante operações de leitura
+    Comportamento do memread: Verificação completa da resposta da memória à ativação e desativação do sinal memread
+
+Importância para o Processador MIPS
+
+A memória de dados é um componente essencial do processador MIPS, sendo usada para:
+
+    Armazenar variáveis: Durante a execução do programa
+    Implementar a pilha: Para chamadas de função e armazenamento temporário
+    Transferir dados: Entre o processador e dispositivos de entrada/saída
+    Implementar estruturas de dados: Arrays, listas, tabelas, etc.
+
+Conclusão
+
+O módulo data_memory demonstrou funcionamento perfeito nos testes, passando em todos os 55 casos de teste implementados. A memória implementa corretamente:
+
+    A capacidade de armazenar e recuperar palavras de 32 bits
+    O controle preciso de leitura e escrita por meio dos sinais re e we
+    O acesso aleatório a 64 posições de memória
+    A resposta correta a todas as condições de timing testadas
+
+A taxa de sucesso de 100% nos testes indica que o módulo está completamente pronto para uso no processador MIPS completo, sem necessidade de modificações adicionais. O comportamento da memória é robusto e confiável, atendendo a todos os requisitos necessários para o funcionamento adequado do processador.
