@@ -1,0 +1,86 @@
+# Simulation files
+*.vcd
+*.vcd.fst
+*.fst
+*.vpd
+*.wdb
+*.history
+*.log
+*.out
+
+# Compilation outputs
+*.o
+*.so
+*.a
+*.exe
+*.dll
+work/
+transcript
+vsim.wlf
+*.vstf
+*.wlf
+
+# ModelSim/QuestaSim
+work/
+transcript
+vsim.wlf
+*.mti
+*.mpf
+*.qdb
+modelsim.ini
+
+# VCS
+simv
+simv.daidir/
+csrc/
+*.vpd
+ucli.key
+DVEfiles/
+
+# Vivado
+*.jou
+*.log
+*.backup*
+*.cache/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+*.srcs/sources_1/
+vivado*.jou
+vivado*.log
+.Xil/
+
+# Quartus
+db/
+incremental_db/
+output_files/
+*.qpf
+*.qsf
+*.qws
+*.rpt
+*.smsg
+*.summary
+*.done
+*.pin
+*.sof
+*.pof
+simulation/
+*.bak
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# Output dumps
+dump.vcd
+dump.fst
